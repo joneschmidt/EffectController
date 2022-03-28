@@ -13,6 +13,7 @@
 // 
 // *************************************************************************
 // Revision history:
+//   2022/02/14 J. Schmidt 1.1 Add FectOff pin control
 //   2022/02/06 J. Schmidt 1.0 
 //   2022/02/03 J. Schmidt 0.1b Start
 // *************************************************************************
@@ -21,11 +22,11 @@
 // USER TUNEABLE Defines
 // *************************************************************************
 // Define the number of effects
-#define NumFects 8
+#define NumFects 9
 // Define the maximum actives
 #define MaxActives 4
 // delay in seconds for main loop sampling 
-#define MainLoopDlySecs 30
+#define MainLoopDlySecs 5
 // Define the probability base
 #define ProbBase 100
 // ****************** Trace & Debug
@@ -34,6 +35,7 @@
 // ******************* Variable definitions
 typedef struct {
     int Dpin;            // pin number for effect
+    int FectOff;         // value for turning effect off
     long int ActveSecs;  // time the effect is up
     long int NActveSecs; // time the pin is idle
     int Problty;         // probability to activate pin
@@ -41,15 +43,16 @@ typedef struct {
 //
 // DEFINE YOUR EFFECTS HERE
 FectDef FectDat [NumFects] = {
-//     Dpin,  ActveSecs, NActveSecs, Problty
-       2,     20,       30,          50, // cows
-       3,     30,       40,          60, // siren
-       4,     40,       30,          20, // factory
-       5,     20,       40,          30, // whistle
-       6,     30,       30,          50, // hens
-       7,     40,       40,          80, // telegraph
-       8,     20,       30,          40, // car
-       9,     30,       40,          70  // truck
+//     Dpin,  FectOff,  ActveSecs, NActveSecs, Problty
+       2,     LOW,      20,       30,          50, // cows
+       3,     LOW,      30,       40,          60, // siren
+       4,     HIGH,     40,       30,          20, // factory
+       5,     LOW,      20,       40,          30, // whistle
+       6,     LOW,      30,       30,          50, // hens
+       7,     HIGH,     40,       40,          80, // telegraph
+       8,     LOW,      20,       30,          40, // car
+       9,     LOW,      30,       40,          70, // truck
+       10,    HIGH,     10,       10,          70  // thing
 };
 //
 unsigned long ActveTM [NumFects];
@@ -71,7 +74,7 @@ void setup() {
     ActveTM[Fidx] = 0;
     IdleTM [Fidx] = 0;
     pinMode     (FectDat[Fidx].Dpin, OUTPUT);
-    digitalWrite(FectDat[Fidx].Dpin, LOW);
+    digitalWrite(FectDat[Fidx].Dpin, FectDat[Fidx].FectOff);
     } // for
   randomSeed(millis());
   Fidx = 0;
@@ -91,7 +94,7 @@ void loop() {
       {// active expired
         if (ActveTM[Lidx] > 0 && IdleTM [Lidx] == 0){
           // Active just expired
-          digitalWrite(FectDat[Lidx].Dpin, LOW);
+          digitalWrite(FectDat[Lidx].Dpin, FectDat[Fidx].FectOff);
           IdleTM [Lidx] = millis() + FectDat[Lidx].NActveSecs * 1000;
           ActveTM[Lidx] = 0;
           #if Trace > 0
@@ -141,7 +144,7 @@ void loop() {
           Serial.print  (FectDat[Fidx].Problty);
           #endif
     if (RandFact <= FectDat[Fidx].Problty){// activate
-      digitalWrite(FectDat[Fidx].Dpin, HIGH);
+      digitalWrite(FectDat[Fidx].Dpin, (FectDat[Fidx].FectOff == LOW)?HIGH:LOW);
       ActveTM[Fidx] = millis() + FectDat[Fidx].ActveSecs * 1000;
       ++Actives;
           #if Trace > 0
