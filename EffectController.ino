@@ -13,6 +13,7 @@
 // 
 // *************************************************************************
 // Revision history:
+//   2024/10/06 J. Schmidt 1.1a Fix example FectDat
 //   2022/02/14 J. Schmidt 1.1 Add FectOff pin control
 //   2022/02/06 J. Schmidt 1.0 
 //   2022/02/03 J. Schmidt 0.1b Start
@@ -43,15 +44,15 @@ typedef struct {
 //
 // DEFINE YOUR EFFECTS HERE
 FectDef FectDat [NumFects] = {
-//     Dpin,  FectOff,  ActveSecs, NActveSecs, Problty
-       2,     LOW,      20,       30,          50, // cows
-       3,     LOW,      30,       40,          60, // siren
-       4,     HIGH,     40,       30,          20, // factory
-       5,     LOW,      20,       40,          30, // whistle
-       6,     LOW,      30,       30,          50, // hens
-       7,     HIGH,     40,       40,          80, // telegraph
-       8,     LOW,      20,       30,          40, // car
-       9,     LOW,      30,       40,          70, // truck
+//     Dpin,  FectOff,  ActveSecs, NActveSecs, Problty %
+       6,     LOW,      20,       30,          50, // cows
+       7,     LOW,      30,       40,          60, // siren
+       3,     HIGH,     40,       30,          20, // factory
+       2,     LOW,       2,       40,          30, // whistle
+       4,     LOW,      30,       30,          50, // hens
+       7,     HIGH,     60,      120,          80, // telegraph
+       8,     LOW,     200,      800,          40, // car
+       9,     LOW,     100,      600,          70, // truck
        10,    HIGH,     10,       10,          70  // thing
 };
 //
